@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+  	<title>Simple Search</title>
+  	<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.3/themes/smoothness/jquery-ui.css">
+  	<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+  	<script src="http://code.jquery.com/ui/1.11.3/jquery-ui.js"></script>
+        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+  
+    </head>
+    <body>
+	<br/>
+	<h1 align="center"> Some search app </h1>
+	<br/>
+        <input type="text" id="searchtext" />
+
+        <div id="Result">
+
+        </div>
+    </body>
+</html>
+
+<script>
+    $("#searchtext").autocomplete({
+        source: function (request, response) {
+            $.getJSON("http://en.wikipedia.org/w/api.php?callback=?",
+              {
+                  srsearch: $("#searchtext").val(),
+                  action: "query",
+                  list: "search",
+                  format: "json"
+              }, function (data) {
+                  response($.map(data.query.search, function (item) {
+                      return {
+                          value: item.title
+                      }
+                  }))
+              }, "json");
+        },
+        minLength: 2,
+        dataType: "json",
+        cache: false,
+        focus: function (event, ui) {
+            return false;
+        },
+        select: function (event, ui) {
+            this.value = ui.item.value;
+            $( "#Result" ).append( "<span class='glyphicon glyphicon-ok'></span><strong>"+this.value+" - "+ new Date($.now()) +"</strong>" );
+            //$("#Result").append();
+            return false;
+        }
+    });
+</script>
+
+
+<style>
+    .selected{
+        background-color: rgba(255,255,255,0.5);
+    }
+    body{
+        width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    h1{
+	border-style: solid
+    }
+    #searchtext {
+        width: 500px;
+        border: 2px solid #777;
+        height: 40px;
+        font-size: 25px;
+        text-indent: 10px;
+    }
+    #NewUl {
+        width: 500px;
+        border: 2px solid #777;
+        border-bottom: none;
+        margin-top: 20px;
+    }
+.SearchEntry{
+        border-bottom: 2px solid #777;
+        height: 30px;
+        text-indent: 10px;
+    }
+</style>
